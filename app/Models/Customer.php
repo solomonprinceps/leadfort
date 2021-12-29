@@ -8,13 +8,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Customer extends Model
+class Customer extends Authenticatable
 {
     use HasFactory, Notifiable , HasApiTokens;
     protected $table = "customers";
     protected $fillable = [
         "firstname",
         "lastname",
+        "google_token",
+        "google_id",
         "email",
         "authId",
         "phone_number",
@@ -26,16 +28,16 @@ class Customer extends Model
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
+    // /**
+    //  * The attributes that should be cast.
+    //  *
+    //  * @var array<string, string>
+    //  */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
     public function providers() {
-        return $this->hasMany(Provider::class,'authId','authId');
+        return $this->hasMany(Provider::class,'user_id','id');
     }
 }

@@ -6,12 +6,43 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class CustomersController extends Controller
 {
+    public function getData(){
+        $id = Auth::id();
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $user = Auth::user();
+        return response([
+            "customer" => $customer,
+            "status" => "success",
+            "message" => "Customer Fetcehd Successfully."
+        ], 200);
+    }
+
+    public function logout() {
+        $id = Auth::id();
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        Auth::user()->tokens()->delete();
+        return response([
+            "status" => "success",
+            "message" => "Customer logout successful.",
+        ], 200);
+    }
     public function login(Request $request) {
         $request->validate([
             "email" => "required|email",
@@ -29,7 +60,7 @@ class CustomersController extends Controller
             'customer' => $customer,
             "status" => "success",
             "message" => "Login Successful.", 
-            'token' => $customer->createToken('webapp', ['role:driver'])->plainTextToken
+            'token' => $customer->createToken('webapp', ['role:customer'])->plainTextToken
         ]);
 
     }
@@ -52,20 +83,53 @@ class CustomersController extends Controller
     public function handleProviderCallback()
     {
         
-        // try {
-        //     $user = Socialite::driver('google')->stateless()->user();
-        //     Log::info(json_encode($user));
-        //     // return $user;
-        // } catch (ClientException $exception) {
-        //     return response([
-        //         'message' => 'Invalid credentials provided.',
-        //         "status" => "error"
-        //     ], 422);
-        // }
-
-        $user = Socialite::driver('google')->stateless()->user();
-        Log::info(json_encode($user));
-        return $user;
+        try {
+            $user = Socialite::driver('google')->stateless()->user();
+            Log::info($user->user["email"]);
+            $customer = Customer::where("email", $user->user["email"])->first();
+            if ($customer == null) {
+                $newcustomer = Customer::create([
+                    "firstname" => $user->user["given_name"],
+                    "lastname" => $user->user["family_name"],
+                    "email" => $user->user["email"],
+                    "google_token" => $user->token,
+                    "google_token" => $user->id,
+                    "authId" => 'AUTHID'.date('YmdHis').rand(100, 999),
+                    "image" => $user->user["picture"]
+                ]);
+                return response([
+                    'customer' => $newcustomer,
+                    "status" => "success",
+                    "message" => "Registration Successful.", 
+                    'token' => $newcustomer->createToken('webapp', ['role:customer'])->plainTextToken
+                ], 200);
+            } else {
+                
+                $customer->update([
+                    "google_token" => $user->token,
+                    "google_token" => $user->id,
+                ]);
+                $customer->save();
+                return response([
+                    'customer' => $customer,
+                    "status" => "success",
+                    "message" => "Login Successful.", 
+                    'token' => $customer->createToken('webapp', ['role:customer'])->plainTextToken
+                ], 200);
+            }
+            // return $user;
+        } catch (ClientException $exception) {
+            return response([
+                'message' => 'Invalid credentials provided.',
+                "status" => "error"
+            ], 422);
+        }
+        // return 123423;
+        // return Socialite::customer('google')->stateless()->user();
+        // $user = Socialite::with('google')->stateless()->user();
+        // Log::info(json_encode($user));
+        
+        // return $user;
 
         // $checkcustomer = Customer::where("email", $user->getEmail())->first();
         // if ($checkcustomer != null) {
@@ -95,7 +159,7 @@ class CustomersController extends Controller
         //     'customer' => $userCreated,
         //     "status" => "success",
         //     "message" => "Login Successful.", 
-        //     'token' => $userCreated->createToken('webapp', ['role:driver'])->plainTextToken
+        //     'token' => $userCreated->createToken('webapp', ['role:customer'])->plainTextToken
         // ]);
     }
 

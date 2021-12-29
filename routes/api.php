@@ -25,4 +25,6 @@ Route::group(['prefix' => 'customers'], function () {
     Route::post('/login', [CustomersController::class, 'login']);
     Route::get('/login/google', [CustomersController::class,'redirectToProvider']);
     Route::get('/callback', [CustomersController::class,'handleProviderCallback']);
+    Route::post('/logout', [CustomersController::class, 'logout'])->middleware(['auth:sanctum', 'type.customer']);
+    Route::get('/getData', [CustomersController::class, 'getData'])->middleware(['auth:sanctum', 'type.customer']);
 });
