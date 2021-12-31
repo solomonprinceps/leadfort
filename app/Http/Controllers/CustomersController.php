@@ -8,9 +8,43 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 class CustomersController extends Controller
 {
+
+    public function sendResetLinkEmail(Request $request) {
+        $request->validate([
+            "email" => "required|email",
+        ]);
+        $selectToken = DB::select("SELECT * FROM `password_resets` WHERE `email` = '$request->email' ORDER BY `password_resets`.`created_at` DESC");
+        $selectToken[0]->created_at;
+        $now = time();
+        $difftime = $now - strtotime($selectToken[0]->created_at);
+        if ($difftime < 120) {
+            return response([
+                "message" => "Reset Password link already sent try again in 5 minutes.",
+                "status" => "error"
+            ],400);
+        }
+        $customer = Customer::where("email", $request->email)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer Email doesn't exist on our system.",
+                "status" => "error"
+            ],400);
+        }
+        $customer->update([
+            "remember_token" => bcrypt(rand(100000,999999)),
+        ]);
+        $customer->save();
+        $passwordReset = DB::select("INSERT INTO `password_resets` (`email`, `token`, `created_at`) VALUES ('$request->email', '".bcrypt(rand(100000,999999))."', '".NOW()."');");
+        $selectToken = DB::select("SELECT * FROM `password_resets` WHERE `email` = '$request->email' ORDER BY `password_resets`.`created_at` DESC");
+        // return $selectToken[0];
+        return response([
+            "message" => "Reset email sent successfully.",
+            "error" => "success"
+        ], 200);
+    }
     public function getData(){
         $id = Auth::id();
         $customer = Customer::where("id", $id)->first();
@@ -52,7 +86,7 @@ class CustomersController extends Controller
 
         if (!$customer || !Hash::check($request->password, $customer->password)) {
             return response([
-                "message" => "he provided credentials are incorrect.",
+                "message" => "The provided credentials are incorrect.",
                 "status" => "error"
             ], 400);
         }
@@ -178,7 +212,7 @@ class CustomersController extends Controller
         $request->validate([
             "firstname" => "required|string",
             "lastname" => "required|string",
-            "email" => "required|email|unique:customers,email",
+            "email" => "required|email|unique:customers",
             "phone_number" => "required|string|unique:customers,phone_number",
             "password" => "required|string|confirmed"
         ]);

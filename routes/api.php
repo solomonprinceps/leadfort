@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,4 +29,6 @@ Route::group(['prefix' => 'customers'], function () {
     Route::get('/callback', [CustomersController::class,'handleProviderCallback']);
     Route::post('/logout', [CustomersController::class, 'logout'])->middleware(['auth:sanctum', 'type.customer']);
     Route::get('/getData', [CustomersController::class, 'getData'])->middleware(['auth:sanctum', 'type.customer']);
+    Route::post('/password/email',[CustomersController::class, 'sendResetLinkEmail']);
+    Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
 });
