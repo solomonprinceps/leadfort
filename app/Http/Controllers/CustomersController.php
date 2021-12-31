@@ -9,8 +9,51 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ForgotPassword;
 class CustomersController extends Controller
 {
+    public function reset(Request $request) {
+        $request->validate([
+            "token" => "required|string",
+            "password" => "required|string|confirmed",
+        ]);
+        $selectToken = DB::select("SELECT * FROM `password_resets` WHERE `token` = '$request->token' ORDER BY `password_resets`.`created_at` DESC");
+        // $passReset =  $selectToken[0]->created_at;
+        if ($selectToken == null) {
+            return response([
+                "message" => "Password Token is invalid.",
+                "status" => "error"
+            ],400);
+        }
+        $passReset =  $selectToken[0]->created_at;
+        $now = time();
+        $difftime = $now - strtotime($selectToken[0]->created_at);
+        if ($difftime > 120) {
+            return response([
+                "message" => "Token Expired.",
+                "status" => "error"
+            ],400);
+        }
+
+        $customer = Customer::where("email", $selectToken[0]->email)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer doesn't exist.",
+                "status" => "error"
+            ],400);
+        }
+        $customer->update([
+            "password" => bcrypt($request->password),
+            "remember_token" => null
+        ]);
+        $customer->save();
+        return response([
+            "message" => "Password reset successfully.",
+            "error" => "success"
+        ], 200);
+
+    }
 
     public function sendResetLinkEmail(Request $request) {
         $request->validate([
@@ -22,7 +65,7 @@ class CustomersController extends Controller
         $difftime = $now - strtotime($selectToken[0]->created_at);
         if ($difftime < 120) {
             return response([
-                "message" => "Reset Password link already sent try again in 5 minutes.",
+                "message" => "Reset Password link already sent try again in 3 minutes.",
                 "status" => "error"
             ],400);
         }
@@ -33,15 +76,17 @@ class CustomersController extends Controller
                 "status" => "error"
             ],400);
         }
+        $token = bcrypt(rand(100000,999999));
         $customer->update([
-            "remember_token" => bcrypt(rand(100000,999999)),
+            "remember_token" => $token,
         ]);
         $customer->save();
-        $passwordReset = DB::select("INSERT INTO `password_resets` (`email`, `token`, `created_at`) VALUES ('$request->email', '".bcrypt(rand(100000,999999))."', '".NOW()."');");
+        $passwordReset = DB::select("INSERT INTO `password_resets` (`email`, `token`, `created_at`) VALUES ('$request->email', '".$token."', '".NOW()."');");
         $selectToken = DB::select("SELECT * FROM `password_resets` WHERE `email` = '$request->email' ORDER BY `password_resets`.`created_at` DESC");
         // return $selectToken[0];
+        Mail::to($request->email)->send(new ForgotPassword($token));
         return response([
-            "message" => "Reset email sent successfully.",
+            "message" => "Reset email link has been sent to your email successfully.",
             "error" => "success"
         ], 200);
     }
