@@ -146,6 +146,7 @@ class CustomersController extends Controller
         ], 200);
     }
     public function login(Request $request) {
+        
         $request->validate([
             "email" => "required|email",
             "password" => "required|string"
