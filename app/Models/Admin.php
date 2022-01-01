@@ -13,7 +13,7 @@ class Admin extends Authenticatable
     use HasFactory, Notifiable , HasApiTokens;
 
 
-    protected $table = "customers";
+    protected $table = "admins";
     protected $fillable = [
         "firstname",
         "lastname",

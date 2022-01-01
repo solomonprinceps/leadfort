@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\AdminsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -29,4 +30,8 @@ Route::group(['prefix' => 'customers'], function () {
     Route::post('/uploadImage', [CustomersController::class, 'uploadImage'])->middleware(['auth:sanctum', 'type.customer']);
     Route::post('/password/email',[CustomersController::class, 'sendResetLinkEmail']);
     Route::post('/password/reset', [CustomersController::class, 'reset']);
+});
+
+Route::group(['prefix' => 'admins'], function () {
+    Route::post('/create', [AdminsController::class, 'createAdmin']);
 });
