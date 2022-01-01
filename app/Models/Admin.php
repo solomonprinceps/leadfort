@@ -8,26 +8,25 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Customer extends Authenticatable
+class Admin extends Authenticatable
 {
     use HasFactory, Notifiable , HasApiTokens;
+
+
     protected $table = "customers";
     protected $fillable = [
         "firstname",
         "lastname",
-        "google_token",
-        "google_id",
+        "adminId",
         "email",
         "image",
-        "authId",
-        "remember_token",
+        "admin_type",
         "phone_number",
         "password"
     ];
 
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     // /**
@@ -39,7 +38,4 @@ class Customer extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function providers() {
-        return $this->hasMany(Provider::class,'user_id','id');
-    }
 }

@@ -26,6 +26,7 @@ Route::group(['prefix' => 'customers'], function () {
     Route::get('/callback', [CustomersController::class,'handleProviderCallback']);
     Route::post('/logout', [CustomersController::class, 'logout'])->middleware(['auth:sanctum', 'type.customer']);
     Route::get('/getData', [CustomersController::class, 'getData'])->middleware(['auth:sanctum', 'type.customer']);
+    Route::post('/uploadImage', [CustomersController::class, 'uploadImage'])->middleware(['auth:sanctum', 'type.customer']);
     Route::post('/password/email',[CustomersController::class, 'sendResetLinkEmail']);
     Route::post('/password/reset', [CustomersController::class, 'reset']);
 });

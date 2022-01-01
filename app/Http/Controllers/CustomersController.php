@@ -55,6 +55,29 @@ class CustomersController extends Controller
 
     }
 
+    public function uploadImage(Request $request) {
+        $id = Auth::id();
+        $request->validate([
+            "image" => "required|string"
+        ]);
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer doesn't exist.",
+                "status" => "error"
+            ],400);
+        }
+        $customer->update([
+            "image" => $request->image
+        ]);
+        $customer->save();
+        return response([
+            "message" => "Customer profile image added.",
+            "status" => "error",
+            "customer" => $customer
+        ], 200);
+    }
+
     public function sendResetLinkEmail(Request $request) {
         $request->validate([
             "email" => "required|email",
