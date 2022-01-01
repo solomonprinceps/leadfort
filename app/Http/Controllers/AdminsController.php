@@ -3,11 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class AdminsController extends Controller
 {
     public function createAdmin(Request $request) {
+        $id = Auth::id();
+        $admin = Admin::where("id", $id)->first();
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($admin->admin_type == "slave") {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
         $request->validate([
             "firstname" => "required|string",
             "lastname" => "required|string",

@@ -33,5 +33,5 @@ Route::group(['prefix' => 'customers'], function () {
 });
 
 Route::group(['prefix' => 'admins'], function () {
-    Route::post('/create', [AdminsController::class, 'createAdmin']);
+    Route::post('/create', [AdminsController::class, 'createAdmin'])->middleware(['auth:sanctum', 'type.admin']);
 });
