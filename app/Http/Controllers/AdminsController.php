@@ -19,6 +19,7 @@ class AdminsController extends Controller
             "firstname" => $request->firstname,
             "lastname" => $request->lastname,
             "email" => $request->email,
+            "admin_type" => "master",
             "adminId" => "ADMINID".date('YmdHis').rand(10000, 99999),
             "phone_number" => $request->phone_number,
             "password" => bcrypt($request->password)
