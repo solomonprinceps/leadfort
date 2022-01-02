@@ -50,7 +50,7 @@ class AdminsController extends Controller
     public function getData() {
         $id = Auth::id();
         $admin = Admin::where("id", $id)->first();
-        // return $admin;
+        // return $admin
         if ($admin == null) {
             return response([
                 "message" => "Admin does'nt exist.",
@@ -64,6 +64,93 @@ class AdminsController extends Controller
         ], 200);
     }
 
+    public function editprofile(Request $request) {
+        $id = Auth::id();
+        $request->validate([
+            "firstname" => "required|string",
+            "lastname" => "required|string",
+            "email" => "required|email",
+            "phone_number" => "required|string"
+        ]);
+        
+        $admin = Admin::where("id", $id)->first();
+        // return $admin
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $checkemail = Admin::where("email",$request->email)->where("id", "!=", $id)->first();
+        if ($checkemail) {
+            return response([
+                "message" => "Email belongs to another admin.",
+                "status" => "error"
+            ], 400);
+        }
+
+        $checkphone = Admin::where("email",$request->phone_number)->where("id", "!=", $id)->first();
+        if ($checkphone) {
+            return response([
+                "message" => "Phone Number belongs to another admin.",
+                "status" => "error"
+            ], 400);
+        }
+        $admin->update([
+            "firstname" => $request->firstname,
+            "lastname" => $request->lastname,
+            "email" => $request->email,
+            "phone_number" => $request->phone_number,
+        ]);
+        $admin->save();
+        return response([
+            "message" => "Admin profile edited successfully.",
+            "status" => "success",
+            "admin" => $admin
+        ], 200);
+
+    }
+
+    public function uploadImage(Request $request) {
+        $request->validate([
+            "image" => "required|string"
+        ]);
+        $id = Auth::id();
+        $admin = Admin::where("id", $id)->first();
+        // return $admin
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $admin->update([
+            "image" => $request->image
+        ]);
+        $admin->save();
+
+        return response([
+            "message" => "Admin Image Uploaded successfully.",
+            "status" => "success",
+            "admin" => $admin
+        ], 200);
+
+    }
+    public function logout() {
+        $id = Auth::id();
+        $customer = Admin::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        Auth::user()->tokens()->delete();
+        return response([
+            "status" => "success",
+            "message" => "Admin logout successful.",
+        ], 200);
+    }
     public function login(Request $request) {
         $request->validate([
             "email" => "required|email",

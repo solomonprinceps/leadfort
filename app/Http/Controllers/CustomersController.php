@@ -130,6 +130,56 @@ class CustomersController extends Controller
         ], 200);
     }
 
+
+
+    public function editprofile(Request $request) {
+        $id = Auth::id();
+        $request->validate([
+            "firstname" => "required|string",
+            "lastname" => "required|string",
+            "email" => "required|email",
+            "phone_number" => "required|string"
+        ]);
+        
+        $admin = Customer::where("id", $id)->first();
+        // return $admin
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $checkemail = Customer::where("email",$request->email)->where("id", "!=", $id)->first();
+        if ($checkemail) {
+            return response([
+                "message" => "Email belongs to another customer.",
+                "status" => "error"
+            ], 400);
+        }
+
+        $checkphone = Customer::where("email",$request->phone_number)->where("id", "!=", $id)->first();
+        if ($checkphone) {
+            return response([
+                "message" => "Phone Number belongs to another customer.",
+                "status" => "error"
+            ], 400);
+        }
+        $admin->update([
+            "firstname" => $request->firstname,
+            "lastname" => $request->lastname,
+            "email" => $request->email,
+            "phone_number" => $request->phone_number,
+        ]);
+        $admin->save();
+        return response([
+            "message" => "Customer profile edited successfully.",
+            "status" => "success",
+            "admin" => $admin
+        ], 200);
+
+    }
+
+
     public function logout() {
         $id = Auth::id();
         $customer = Customer::where("id", $id)->first();
