@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\AdminsController;
+use App\Http\Controllers\InsuranceCompanyController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,4 +41,11 @@ Route::group(['prefix' => 'admins'], function () {
     Route::post('/logout', [AdminsController::class, 'logout'])->middleware(['auth:sanctum', 'type.admin']);
     Route::post('/uploadImage', [AdminsController::class, 'uploadImage'])->middleware(['auth:sanctum', 'type.admin']);
     Route::post('/editprofile', [AdminsController::class, 'editprofile'])->middleware(['auth:sanctum', 'type.admin']);
+    Route::post('/pin', [AdminsController::class, 'addOremove'])->middleware(['auth:sanctum', 'type.admin']);
+});
+
+Route::group(['prefix' => 'admins/insurance'], function () {  
+    Route::post('/create', [InsuranceCompanyController::class, 'createInsurance'])->middleware(['auth:sanctum', 'type.admin']);
+    Route::post('/list', [InsuranceCompanyController::class, 'listcompany'])->middleware(['auth:sanctum', 'type.admin']);
+    Route::get('/single/{company_id}', [InsuranceCompanyController::class, 'getcompany'])->middleware(['auth:sanctum', 'type.admin']);
 });

@@ -18,6 +18,7 @@ class Admin extends Authenticatable
         "firstname",
         "lastname",
         "adminId",
+        "transaction_pin",
         "email",
         "image",
         "admin_type",

@@ -64,6 +64,30 @@ class AdminsController extends Controller
         ], 200);
     }
 
+    public function addOremove(Request $request) {
+        $id = Auth::id();
+        $request->validate([
+            "transaction_pin" => "required|string"
+        ]);
+        $admin = Admin::where("id", $id)->first();
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $admin->update([
+            "transaction_pin" => $request->transaction_pin,
+        ]);
+        $admin->save();
+        return response([
+            "message" => "Admin transaction pin added successfully.",
+            "status" => "success",
+            "admin" => $admin
+        ], 200);
+
+    }
+
     public function editprofile(Request $request) {
         $id = Auth::id();
         $request->validate([
