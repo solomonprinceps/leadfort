@@ -48,6 +48,97 @@ class InsuranceCompanyController extends Controller
 
    }
 
+   public function editcompany(Request $request) {
+        $request->validate([
+            "company_name" => "required|string",
+            "company_id" => "required|string",
+            "transaction_pin" => "required|string",
+        ]);
+        $id = Auth::id();
+        $checkname = InsuranceCompany::where("company_name", $request->company_name)->where("company_id", "!=", $request->company_id)->first();
+        if ($checkname) {
+            return response([
+                "message" => "Company Name already exist.",
+                "status" => "error"
+            ], 400);
+        } 
+        $admin = Admin::where("id", $id)->first();
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($admin->transaction_pin != $request->transaction_pin) {
+            return response([
+                "message" => "Admin transaction pin not correct.",
+                "status" => "error"
+            ], 400);
+        }
+        // $insurance = InsuranceCompany::create([
+        //     "company_name" => $request->company_name,
+        //     "company_id" => 'IC'.date('YmdHis').rand(10000, 99999),
+        //     "adminId" => $admin->adminId
+        // ]);
+        $insurance = InsuranceCompany::where("company_id", $request->company_id)->first();
+        $insurance->update([
+            "company_name" => $request->company_name
+        ]);
+        return response([
+            "message" => "Insurance Company Updated Successfully.",
+            "status" => "success",
+            "insurance" => $insurance
+        ], 200);
+
+   }
+
+   public function deletecompany(Request $request) {
+        $request->validate([
+            "company_id" => "required|string",
+            "transaction_pin" => "required|string",
+        ]);
+        $id = Auth::id();
+        $checkname = InsuranceCompany::where("company_name", $request->company_name)->where("company_id", "!=", $request->company_id)->first();
+        if ($checkname) {
+            return response([
+                "message" => "Company Name already exist.",
+                "status" => "error"
+            ], 400);
+        } 
+        $admin = Admin::where("id", $id)->first();
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($admin->transaction_pin != $request->transaction_pin) {
+            return response([
+                "message" => "Admin transaction pin not correct.",
+                "status" => "error"
+            ], 400);
+        }
+        // $insurance = InsuranceCompany::create([
+        //     "company_name" => $request->company_name,
+        //     "company_id" => 'IC'.date('YmdHis').rand(10000, 99999),
+        //     "adminId" => $admin->adminId
+        // ]);
+        $insurance = InsuranceCompany::where("company_id", $request->company_id)->first();
+        if ($insurance == null) {
+            return response([
+                "message" => "Insurance Company Does'nt Exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $insurance->delete();
+        return response([
+            "message" => "Insurance Company Deleted Successfully.",
+            "status" => "success",
+            "insurance" => $insurance
+        ], 200);
+
+    }
+
    public function getcompany($insurance) {
     //    return $insurance;
        $singleinsurance = InsuranceCompany::where("company_id", $insurance)->first();
