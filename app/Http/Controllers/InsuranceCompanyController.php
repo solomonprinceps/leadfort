@@ -155,7 +155,7 @@ class InsuranceCompanyController extends Controller
        ], 200);
    }
 
-   public function listcompany(Request $request) {
+    public function listcompany(Request $request) {
         $request->validate([
             "page_number" => "required|integer"
         ]);
@@ -173,5 +173,5 @@ class InsuranceCompanyController extends Controller
             "status" => "success",
             "insurances" => $insurances
         ], 200);
-   }
+    }
 }
