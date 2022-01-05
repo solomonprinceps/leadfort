@@ -60,7 +60,7 @@ class AttachPolicyController extends Controller
         }
         // return $request->image;
         if($file = $request->file('image')) {
-            $filename = 'policydocument-' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = 'policydocument-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->move(public_path('policydocument'), $filename);
             $documentlink = asset('policydocument/'.$filename);
             
