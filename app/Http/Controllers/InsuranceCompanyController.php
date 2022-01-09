@@ -139,7 +139,8 @@ class InsuranceCompanyController extends Controller
 
     }
 
-   public function getcompany($insurance) {
+   
+    public function getcompany($insurance) {
     //    return $insurance;
        $singleinsurance = InsuranceCompany::where("company_id", $insurance)->first();
        if ($singleinsurance == null) {
@@ -155,7 +156,7 @@ class InsuranceCompanyController extends Controller
        ], 200);
    }
 
-    public function listcompany(Request $request) {
+   public function listcompany(Request $request) {
         $request->validate([
             "page_number" => "required|integer"
         ]);
@@ -173,5 +174,6 @@ class InsuranceCompanyController extends Controller
             "status" => "success",
             "insurances" => $insurances
         ], 200);
-    }
+   }
+
 }

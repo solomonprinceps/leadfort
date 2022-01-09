@@ -113,6 +113,8 @@ class CustomersController extends Controller
             "error" => "success"
         ], 200);
     }
+
+
     public function getData(){
         $id = Auth::id();
         $customer = Customer::where("id", $id)->first();
@@ -129,7 +131,6 @@ class CustomersController extends Controller
             "message" => "Customer Fetcehd Successfully."
         ], 200);
     }
-
 
 
     public function editprofile(Request $request) {
@@ -195,6 +196,8 @@ class CustomersController extends Controller
             "message" => "Customer logout successful.",
         ], 200);
     }
+
+
     public function login(Request $request) {
         
         $request->validate([
@@ -217,12 +220,10 @@ class CustomersController extends Controller
         ]);
 
     }
+
+
     public function redirectToProvider()
     {
-        // $validated = $this->validateProvider($provider);
-        // if (!is_null($validated)) {
-        //     return $validated;
-        // }
 
         $uerUrl = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
         return response([
@@ -316,10 +317,7 @@ class CustomersController extends Controller
         // ]);
     }
 
-    /**
-     * @param $provider
-     * @return JsonResponse
-     */
+    
     protected function validateProvider($provider)
     {
         if (!in_array($provider, ['facebook', 'github', 'google'])) {
@@ -349,4 +347,6 @@ class CustomersController extends Controller
             "customer" => $customer
         ], 200);
     }
+
+    
 }

@@ -103,7 +103,26 @@ class PolicyController extends Controller
                 "message" => "No Insurance policy available",
                 "status" => "error",
                 "policy" => null
-            ], 200);
+            ], 400);
+        }
+        return response([
+            "message" => "Insurance policy available",
+            "status" => "success",
+            "policy" => $policy
+        ], 200);
+    }
+
+    public function customerPolicylist() {
+        $policy = Policy::get();
+        foreach ($policy as $value) {
+            $value->attachpolicy;
+        }
+        if ($policy->isEmpty()) {
+            return response([
+                "message" => "No Insurance policy available",
+                "status" => "error",
+                "policy" => []
+            ], 400);
         }
         return response([
             "message" => "Insurance policy available",

@@ -6,6 +6,7 @@ use App\Models\InsuranceCompany;
 use App\Models\Policy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Insurance;
 
 class AttachPolicy extends Model
 {
@@ -15,6 +16,7 @@ class AttachPolicy extends Model
         "policy_id",
         "company_id",
         "rate",
+        "amount",
         "policy_document",
         "description",
     ];
@@ -24,6 +26,10 @@ class AttachPolicy extends Model
     }
 
     public function policy() {
-        return $this->hasOne(Policy::class, "policy_id", "policy_id");
+        return $this->belongsTo(Policy::class, "policy_id", "policy_id");
+    }
+
+    public function attachpolicy() {
+        return $this->belongsTo(Insurance::class, "attach_policies_id", "attach_policies_id");
     }
 }

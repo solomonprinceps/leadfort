@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminsController;
 use App\Http\Controllers\InsuranceCompanyController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\AttachPolicyController;
+use App\Http\Controllers\InsuranceController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,6 +35,14 @@ Route::group(['prefix' => 'customers'], function () {
     Route::post('/password/email',[CustomersController::class, 'sendResetLinkEmail']);
     Route::post('/password/reset', [CustomersController::class, 'reset']);
     Route::post('/editprofile', [CustomersController::class, 'editprofile'])->middleware(['auth:sanctum', 'type.customer']);
+    Route::group(['prefix' => 'policy'], function () {
+        Route::get('/list', [PolicyController::class, 'customerPolicylist'])->middleware(['auth:sanctum', 'type.customer']);
+    });
+    Route::group(['prefix' => 'insurance/buy'], function () {
+        Route::post('/one', [InsuranceController::class, 'createStepone'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::post('/two', [InsuranceController::class, 'createSteptwo'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::get('/two/{id}', [InsuranceController::class, 'getAttachment'])->middleware(['auth:sanctum', 'type.customer']);
+    });
 });
 
 Route::group(['prefix' => 'admins'], function () {
@@ -62,6 +71,7 @@ Route::group(['prefix' => 'admins'], function () {
 
         Route::group(['prefix' => 'attachment'], function () {
             Route::post('/create', [AttachPolicyController::class, 'create_attachemnt'])->middleware(['auth:sanctum', 'type.admin']);
+            Route::post('/edit', [AttachPolicyController::class, 'edit_attachemnt'])->middleware(['auth:sanctum', 'type.admin']);
             Route::post('/list', [AttachPolicyController::class, 'list_attachemnt'])->middleware(['auth:sanctum', 'type.admin']);
         });
     });
