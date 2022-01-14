@@ -334,20 +334,20 @@ class CustomersController extends Controller
         $request->validate([
             "firstname" => "required|string",
             "lastname" => "required|string",
-            // "email" => "required|email|unique:customers",
-            // "phone_number" => "required|string|unique:customers,phone_number",
+            "email" => "required|email",
+            "phone_number" => "required|string",
             "password" => "required|string|confirmed"
         ]);
 
         $checkphone = Customer::where("phone_number", $request->phone_number)->first();
-        if ($checkphone == null) {
+        if ($checkphone != null) {
             return response([
                 "message" => "Phone number already resgistered by another customer.",
                 "status" => "error"
             ], 400);
         }
         $checkemail = Customer::where("email", $request->email)->first();
-        if ($checkemail == null) {
+        if ($checkemail != null) {
             return response([
                 "message" => "Email already resgistered by another customer.",
                 "status" => "error"
