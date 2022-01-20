@@ -30,8 +30,11 @@ class InsuranceController extends Controller
             ], 400);
         }
         $availablepolicys = Policy::where("policy_id", $insurnace->policy_id)->first();
-
-        $availablepolicys->attachpolicy;
+        $attacted = $availablepolicys->attachpolicy;
+        foreach ($attacted as $attact) {
+            $attact->company;
+        }
+        $availablepolicys->attachpolicy = $attacted;
         return response([
             "message" => "Insurance doesn't exist.",
             "status" => "success",

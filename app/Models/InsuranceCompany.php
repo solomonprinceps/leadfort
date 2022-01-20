@@ -13,6 +13,7 @@ class InsuranceCompany extends Model
         "company_name",
         "company_id",
         "adminId",
+        "image",
         "customer_number"
     ];
 }

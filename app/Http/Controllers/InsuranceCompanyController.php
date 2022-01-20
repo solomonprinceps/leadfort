@@ -12,6 +12,7 @@ class InsuranceCompanyController extends Controller
    public function createInsurance(Request $request) {
         $request->validate([
             "company_name" => "required|string",
+            'image' => 'required|mimes:png,jpg,jpeg,pdf|max:2048',
             "transaction_pin" => "required|string",
         ]);
         $id = Auth::id();
@@ -35,18 +36,25 @@ class InsuranceCompanyController extends Controller
                 "status" => "error"
             ], 400);
         }
-        $insurance = InsuranceCompany::create([
-            "company_name" => $request->company_name,
-            "company_id" => 'IC'.date('YmdHis').rand(10000, 99999),
-            "adminId" => $admin->adminId
-        ]);
+
+        if($file = $request->file('image')) {
+            $filename = 'companyimge-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->move(public_path('companyimge'), $filename);
+            $documentlink = asset('companyimge/'.$filename);
+            
+            $insurance = InsuranceCompany::create([
+                "company_name" => $request->company_name,
+                "image" => $documentlink,
+                "company_id" => 'IC'.date('YmdHis').rand(10000, 99999),
+                "adminId" => $admin->adminId
+            ]);
+        }
         return response([
             "message" => "Insurance Company Created Successfully.",
             "status" => "success",
             "insurance" => $insurance
         ], 200);
-
-   }
+    }
 
    public function editcompany(Request $request) {
         $request->validate([
