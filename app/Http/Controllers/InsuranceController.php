@@ -68,14 +68,14 @@ class InsuranceController extends Controller
                 "policy" => null
             ],400);
         }
-        $attachment = AttachPolicy::where("id", $request->attach_policies_id)->first();
-        if ($attachment == null) {
-            return response([
-                "message" => "Attachment of policy does'nt exist.",
-                "status" => "error",
-                "policy" => null
-            ],400);
-        }
+        // $attachment = AttachPolicy::where("id", $request->attach_policies_id)->first();
+        // if ($attachment == null) {
+        //     return response([
+        //         "message" => "Attachment of policy does'nt exist.",
+        //         "status" => "error",
+        //         "policy" => null
+        //     ],400);
+        // }
         $insurnace_id = "INS".date('YmdHis').rand(10000, 99999);
         $newInsurance = Insurance::create([
             "policy_id" => $request->policy_id,
