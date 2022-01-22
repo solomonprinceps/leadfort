@@ -36,7 +36,7 @@ class InsuranceController extends Controller
         }
         $availablepolicys->attachpolicy = $attacted;
         return response([
-            "message" => "Insurance doesn't exist.",
+            "message" => "Insurance company fetched successfully.",
             "status" => "success",
             "insurance" => $insurnace,
             "policy" => $availablepolicys,
@@ -88,7 +88,7 @@ class InsuranceController extends Controller
             "description" => $request->description
         ]);
         return response([
-            "message" => "Insurance attached successfully.",
+            "message" => "Insurance purchase process started.",
             "status" => "success",
             "insurance" => $newInsurance
         ],200);
@@ -107,6 +107,13 @@ class InsuranceController extends Controller
                 "status" => "error"
             ], 400);
         }
+        $ats = AttachPolicy::where("id", $request->attach_policies_id)->first();    
+        if ($ats == null) {
+            return response([
+                "message" => "Policy Attachment does'nt exist.",
+                "status" => "error",
+            ], 400);
+        }
 
         $insurance = Insurance::where("insurance_id", $request->insurance_id)->first();
         if ($insurance == null) {
@@ -120,7 +127,7 @@ class InsuranceController extends Controller
             return response([
                 "message" => "Insurance is already awaiting payments.",
                 "status" => "error",
-                "insurance" =>  null
+                "insurance" =>  $insurance
             ], 400);
         }
         $attachments = AttachPolicy::where("id", $request->attach_policies_id)->where("policy_id", $insurance->policy_id)->first();
