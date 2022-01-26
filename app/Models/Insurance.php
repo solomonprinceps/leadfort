@@ -21,6 +21,10 @@ class Insurance extends Model
         "description",
     ];
     public function attachpolicy() {
-        return $this->hasMany(AttachPolicy::class, "attach_policies_id");
+        return $this->hasMany(AttachPolicy::class, "attach_policies_id", "id");
+    }
+
+    public function policy() {
+        return $this->hasOne(Policy::class, "policy_id", "policy_id");
     }
 }

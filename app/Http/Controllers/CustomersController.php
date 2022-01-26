@@ -119,7 +119,6 @@ class CustomersController extends Controller
         ], 200);
     }
 
-
     public function getData(){
         $id = Auth::id();
         $customer = Customer::where("id", $id)->first();
@@ -136,7 +135,6 @@ class CustomersController extends Controller
             "message" => "Customer Fetcehd Successfully."
         ], 200);
     }
-
 
     public function editprofile(Request $request) {
         $id = Auth::id();
@@ -185,7 +183,6 @@ class CustomersController extends Controller
 
     }
 
-
     public function logout() {
         $id = Auth::id();
         $customer = Customer::where("id", $id)->first();
@@ -201,7 +198,6 @@ class CustomersController extends Controller
             "message" => "Customer logout successful.",
         ], 200);
     }
-
 
     public function login(Request $request) {
         
@@ -229,7 +225,6 @@ class CustomersController extends Controller
 
     public function redirectToProvider()
     {
-
         $uerUrl = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
         return response([
             "message" => "Google Auth Url",
@@ -322,7 +317,6 @@ class CustomersController extends Controller
         // ]);
     }
 
-    
     protected function validateProvider($provider)
     {
         if (!in_array($provider, ['facebook', 'github', 'google'])) {
@@ -368,5 +362,64 @@ class CustomersController extends Controller
         ], 200);
     }
 
+    public function socialite_password(Request $request) {
+        $id = Auth::id();
+        $request->validate([
+            "password" => "required|string",
+        ]); 
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "status" => "error",
+                "message" => "Customer does'nt exist."
+            ], 400);
+        }
+        if ($customer->password != null) {
+            return response([
+                "status" => "error",
+                "message" => "Customer password already  exist."
+            ], 200);
+        }
+        $customer->update([
+            "password" => bcrypt($request->new_password)
+        ]);
+        $customer->save();
+        return response([
+            "status" => "error",
+            "message" => "Customer password added successful."
+        ], 200);
+    }
+
+    public function editpassword(Request $request) {
+        $id = Auth::id(); 
+        $request->validate([
+            "old_password" => "required|string",
+            "new_password" => "required|string|confirmed"
+        ]);
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "status" => "error",
+                "message" => "Customer does'nt exist."
+            ], 400);
+        }
+
+        if (!$customer || !Hash::check($request->old_password, $customer->password)) {
+            return response([
+                "message" => "The provided credentials are incorrect.",
+                "status" => "error"
+            ], 400);
+        }
+
+        $customer->update([
+            "password" => bcrypt($request->new_password)
+        ]);
+        $customer->save();
+        return response([
+            "status" => "error",
+            "message" => "Customer password edit successful."
+        ], 200);
+        
+    }
     
 }

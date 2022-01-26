@@ -158,4 +158,50 @@ class InsuranceController extends Controller
             "reference" => $ref
         ], 200);
     }
+
+    public function listInsurance(Request $request) {
+        $id = Auth::id();
+        $request->validate([
+            "page_number" => "required|integer",
+            "search_text" => "string|nullable"
+        ]);
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($request->search_text != null) {
+            $insurances = Insurance::where("customer_id", $customer->authId)->where("insurance_id", $request->search_text)->where("status","!=", "0")->orderBy('id', 'DESC')->paginate($request->page_number);
+            foreach ($insurances as $value) {
+                $atid = (int) $value->attach_policies_id;
+                
+                $value->attached_policy = $this->getcompanyandattcehent($atid);
+                $value->policy;
+            }
+            return response([
+                "status" => "success",
+                "message" => "Insurance Fetched Successfully.",
+                "insurance" => $insurances
+            ], 200);
+        }
+        $insurances = Insurance::where("customer_id", $customer->authId)->where("status","!=", "0")->orderBy('id', 'DESC')->paginate($request->page_number);
+        foreach ($insurances as $value) {
+            $atid = (int) $value->attach_policies_id;
+            
+            $value->attached_policy = $this->getcompanyandattcehent($atid);
+            $value->policy;
+        }
+        return response([
+            "status" => "success",
+            "message" => "Insurance Fetched Successfully.",
+            "insurance" => $insurances
+        ], 200);
+    } 
+    function getcompanyandattcehent($attachpolicy) {
+        $attach = AttachPolicy::where("id", $attachpolicy)->first();
+        $attach->company; 
+        return $attach;
+    }
 }

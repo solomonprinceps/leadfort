@@ -35,8 +35,12 @@ Route::group(['prefix' => 'customers'], function () {
     Route::post('/password/email',[CustomersController::class, 'sendResetLinkEmail']);
     Route::post('/password/reset', [CustomersController::class, 'reset']);
     Route::post('/editprofile', [CustomersController::class, 'editprofile'])->middleware(['auth:sanctum', 'type.customer']);
+    Route::post('/editpassword', [CustomersController::class, 'editpassword'])->middleware(['auth:sanctum', 'type.customer']);
     Route::group(['prefix' => 'policy'], function () {
         Route::get('/list', [PolicyController::class, 'customerPolicylist'])->middleware(['auth:sanctum', 'type.customer']);
+    });
+    Route::group(['prefix' => 'insurance'], function () {
+        Route::post('/list', [InsuranceController::class, 'listInsurance'])->middleware(['auth:sanctum', 'type.customer']);
     });
     Route::group(['prefix' => 'insurance/buy'], function () {
         Route::post('/one', [InsuranceController::class, 'createStepone'])->middleware(['auth:sanctum', 'type.customer']);
