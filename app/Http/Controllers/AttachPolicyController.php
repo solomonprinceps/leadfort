@@ -21,6 +21,8 @@ class AttachPolicyController extends Controller
             "description" => "required|string",
             "transaction_pin" => "required|string",
         ]);
+        
+        // return $request->image;
         $attachmentcheck = AttachPolicy::where("company_id", $request->company_id)->where("policy_id", $request->policy_id)->first();
         if ($attachmentcheck != null) {
             return response([
@@ -59,7 +61,6 @@ class AttachPolicyController extends Controller
                 "status" => "error"
             ], 400);
         }
-        // return $request->image;
         if($file = $request->file('image')) {
             $filename = 'policydocument-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->move(public_path('policydocument'), $filename);

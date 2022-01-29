@@ -159,11 +159,40 @@ class InsuranceController extends Controller
         ], 200);
     }
 
+    public function oneInsurance($insurance) {
+        $id = Auth::id();
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $insurances = Insurance::where("customer_id", $customer->authId)->where("insurance_id", $insurance)->first();
+        if ($insurances == null) {
+            return response([
+                "message" => "Insurances does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $atid = (int) $insurances->attach_policies_id;
+        $insurances->attached_policy = $this->getcompanyandattcehent($atid);
+        $insurances->policy;
+        return response([
+            "status" => "success",
+            "message" => "Insurance Fetched Successfully.",
+            "insurance" => $insurances
+        ], 200);
+        
+
+    }
+
     public function listInsurance(Request $request) {
         $id = Auth::id();
         $request->validate([
             "page_number" => "required|integer",
-            "search_text" => "string|nullable"
+            "search_text" => "string|nullable",
+            "status" => "required|integer"
         ]);
         $customer = Customer::where("id", $id)->first();
         if ($customer == null) {
@@ -186,7 +215,7 @@ class InsuranceController extends Controller
                 "insurance" => $insurances
             ], 200);
         }
-        $insurances = Insurance::where("customer_id", $customer->authId)->where("status","!=", "0")->orderBy('id', 'DESC')->paginate($request->page_number);
+        $insurances = Insurance::where("customer_id", $customer->authId)->where("status","==", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
         foreach ($insurances as $value) {
             $atid = (int) $value->attach_policies_id;
             

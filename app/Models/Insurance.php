@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AttachPolicy;
+use App\Models\Claim;
 class Insurance extends Model
 {
     use HasFactory;
@@ -27,4 +28,11 @@ class Insurance extends Model
     public function policy() {
         return $this->hasOne(Policy::class, "policy_id", "policy_id");
     }
+
+    
+    public function claim() {
+        return $this->hasMany(Claim::class, "insurance_id", "insurance_id");
+    }
+
+
 }

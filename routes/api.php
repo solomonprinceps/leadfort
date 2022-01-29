@@ -8,6 +8,7 @@ use App\Http\Controllers\InsuranceCompanyController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\AttachPolicyController;
 use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\ClaimController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,9 +40,20 @@ Route::group(['prefix' => 'customers'], function () {
     Route::group(['prefix' => 'policy'], function () {
         Route::get('/list', [PolicyController::class, 'customerPolicylist'])->middleware(['auth:sanctum', 'type.customer']);
     });
+
+
     Route::group(['prefix' => 'insurance'], function () {
         Route::post('/list', [InsuranceController::class, 'listInsurance'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::get('/list/{insurance_id}', [InsuranceController::class, 'oneInsurance'])->middleware(['auth:sanctum', 'type.customer']);
     });
+
+
+    Route::group(['prefix' => 'claim'], function () {
+        Route::post('/create', [ClaimController::class, 'createclaim'])->middleware(['auth:sanctum', 'type.customer']);
+        // Route::get('/list/{insurance_id}', [InsuranceController::class, 'oneInsurance'])->middleware(['auth:sanctum', 'type.customer']);
+    });
+
+
     Route::group(['prefix' => 'insurance/buy'], function () {
         Route::post('/one', [InsuranceController::class, 'createStepone'])->middleware(['auth:sanctum', 'type.customer']);
         Route::post('/two', [InsuranceController::class, 'createSteptwo'])->middleware(['auth:sanctum', 'type.customer']);
