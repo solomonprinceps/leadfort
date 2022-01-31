@@ -58,7 +58,7 @@ class CustomersController extends Controller
     public function uploadImage(Request $request) {
         $id = Auth::id();
         $request->validate([
-            "image" => "required|string"
+            "image" => 'required|mimes:png,jpg,jpeg,pdf|max:2048',
         ]);
         $customer = Customer::where("id", $id)->first();
         if ($customer == null) {
@@ -67,15 +67,20 @@ class CustomersController extends Controller
                 "status" => "error"
             ],400);
         }
-        $customer->update([
-            "image" => $request->image
-        ]);
-        $customer->save();
-        return response([
-            "message" => "Customer profile image added.",
-            "status" => "error",
-            "customer" => $customer
-        ], 200);
+        if($file = $request->file('image')) {
+            $filename = 'profileImage-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->move(public_path('profileImage'), $filename);
+            $documentlink = asset('profileImage/'.$filename);
+            $customer->update([
+                "image" => $documentlink
+            ]);
+            $customer->save();
+            return response([
+                "message" => "Customer profile image added.",
+                "status" => "error",
+                "customer" => $customer
+            ], 200);
+        }    
     }
 
     public function sendResetLinkEmail(Request $request) {
