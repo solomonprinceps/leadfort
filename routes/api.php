@@ -44,6 +44,7 @@ Route::group(['prefix' => 'customers'], function () {
 
     Route::group(['prefix' => 'insurance'], function () {
         Route::post('/list', [InsuranceController::class, 'listInsurance'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::get('/listforcustomer', [InsuranceController::class, 'listCustomer'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/list/{insurance_id}', [InsuranceController::class, 'oneInsurance'])->middleware(['auth:sanctum', 'type.customer']);
     });
 

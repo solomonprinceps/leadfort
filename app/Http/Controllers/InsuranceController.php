@@ -187,6 +187,28 @@ class InsuranceController extends Controller
 
     }
 
+    public function listCustomer() {
+        $id = Auth::id();
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $insurances = Insurance::where("customer_id", $customer->authId)->where("status", '1')->get();
+        foreach ($insurances as $value) {
+            $atid = (int) $value->attach_policies_id;
+            $value->attached_policy = $this->getcompanyandattcehent($atid);
+            $value->policy;
+        }
+        return response([
+            "status" => "success",
+            "message" => "Insurance Fetched Successfully.",
+            "insurance" => $insurances
+        ], 200);
+    }
+
     public function listInsurance(Request $request) {
         $id = Auth::id();
         $request->validate([
