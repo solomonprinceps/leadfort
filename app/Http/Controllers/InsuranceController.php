@@ -202,7 +202,7 @@ class InsuranceController extends Controller
             ], 400);
         }
         if ($request->search_text != null) {
-            $insurances = Insurance::where("customer_id", $customer->authId)->where("insurance_id", $request->search_text)->where("status","!=", "0")->orderBy('id', 'DESC')->paginate($request->page_number);
+            $insurances = Insurance::where("customer_id", $customer->authId)->where("insurance_id", $request->search_text)->where("status", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
             foreach ($insurances as $value) {
                 $atid = (int) $value->attach_policies_id;
                 
@@ -215,7 +215,7 @@ class InsuranceController extends Controller
                 "insurance" => $insurances
             ], 200);
         }
-        $insurances = Insurance::where("customer_id", $customer->authId)->where("status","==", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
+        $insurances = Insurance::where("customer_id", $customer->authId)->where("status", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
         foreach ($insurances as $value) {
             $atid = (int) $value->attach_policies_id;
             
