@@ -8,7 +8,10 @@ use App\Models\Insurance;
 use App\Models\Policy;
 use Illuminate\Http\Request;
 use App\Models\Payments;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class InsuranceController extends Controller
 {
@@ -43,6 +46,43 @@ class InsuranceController extends Controller
         ], 200);
     }
 
+    public function verifypayment($refrence) {
+        // return $refrence;
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.env("Paystack_Secret"),
+        ])->get('https://api.paystack.co/transaction/verify/'.$refrence);
+        Log::info($response);
+        if (isset($response["data"])) {
+            $payments = Payments::where("reference", $refrence)->first();
+            if ($payments == null) {
+                return response([
+                    "status" => "error",
+                    "message" => "This payment reference doesn't belong to use."
+                ], 400);
+            }
+            if ($payments->amount <= ($response["data"]["amount"]/100)) {
+                // return $response["data"];
+                $insurance = Insurance::where("insurance_id", $payments->insurance_id)->first();
+                $insurance->update([
+                    "status" => "2",
+                ]);
+                $insurance->save();
+                $payments->update([
+                    "status" => '1'
+                ]);
+                $payments->save();
+                return response([
+                    "status" => "success",
+                    "message" => "Successfully verified."
+                ], 400);
+            }
+        }
+        return response([
+            "status" => "error",
+            "message" => "Wrong Reference"
+        ], 400);
+    }
+
     public function createStepone(Request $request) {
         $id = Auth::id();
         $request->validate([
@@ -68,14 +108,7 @@ class InsuranceController extends Controller
                 "policy" => null
             ],400);
         }
-        // $attachment = AttachPolicy::where("id", $request->attach_policies_id)->first();
-        // if ($attachment == null) {
-        //     return response([
-        //         "message" => "Attachment of policy does'nt exist.",
-        //         "status" => "error",
-        //         "policy" => null
-        //     ],400);
-        // }
+        
         $insurnace_id = "INS".date('YmdHis').rand(10000, 99999);
         $newInsurance = Insurance::create([
             "policy_id" => $request->policy_id,
@@ -202,6 +235,7 @@ class InsuranceController extends Controller
             $value->attached_policy = $this->getcompanyandattcehent($atid);
             $value->policy;
         }
+        
         return response([
             "status" => "success",
             "message" => "Insurance Fetched Successfully.",

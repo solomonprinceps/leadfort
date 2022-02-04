@@ -58,6 +58,7 @@ Route::group(['prefix' => 'customers'], function () {
     Route::group(['prefix' => 'insurance/buy'], function () {
         Route::post('/one', [InsuranceController::class, 'createStepone'])->middleware(['auth:sanctum', 'type.customer']);
         Route::post('/two', [InsuranceController::class, 'createSteptwo'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::get('/verify/{reference}', [InsuranceController::class, 'verifypayment'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/two/{id}', [InsuranceController::class, 'getAttachment'])->middleware(['auth:sanctum', 'type.customer']);
     });
 });
