@@ -14,10 +14,8 @@ class ClaimController extends Controller
             "insurance_id" => "required|string",
             "circumstance" => "required|string",
             "description" => "required|string",
-            "images" => 'required',
-            'images.*' => 'required|mimes:jpeg,jpg,png,gif|max:2048',
-            "documents" => 'required',
-            'documents.*' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
+            "images" => 'required|string',
+            "documents" => 'required|string',
         ]);
         $insurance = Insurance::where("insurance_id", $request->insurance_id)->first();
         if ($insurance == null) {
@@ -28,25 +26,15 @@ class ClaimController extends Controller
         }
         $uploadImages = [];
         $uploadDocuments = [];
-        if($request->hasfile('images')) {
-            foreach($request->file('images') as $file)
-            {
-                $filename = 'claimImage-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
-                $path = $file->move(public_path('claimImage'), $filename);
-                $documentlink = asset('claimImage/'.$filename); 
-                $uploadImages[]=$documentlink;
-            }
+        $images = json_decode($request->images);
+        $documents = json_decode($request->documents);
+        foreach ($images as $value) {
+            $uploadImages = $value;
         }
-
-        if($request->hasfile('documents')) {
-            foreach($request->file('documents') as $file)
-            {
-                $filename = 'claimDocument-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
-                $path = $file->move(public_path('claimDocument'), $filename);
-                $documentlink = asset('claimDocument/'.$filename); 
-                $uploadDocuments[]=$documentlink;
-            }
+        foreach ($documents as $value) {
+            $uploadDocuments = $value;
         }
+        
         $claim = "CLM".date('YmdHis').rand(10000, 99999).rand(10000, 99999).rand(10000, 99999);
         Claim::create([
             "claim_id" => $claim,
