@@ -68,7 +68,7 @@ class InsuranceController extends Controller
                 ]);
                 $insurance->save();
                 $payments->update([
-                    "status" => '1'
+                    "status" => 'completed'
                 ]);
                 $payments->save();
                 return response([
@@ -240,6 +240,43 @@ class InsuranceController extends Controller
             "status" => "success",
             "message" => "Insurance Fetched Successfully.",
             "insurance" => $insurances
+        ], 200);
+    }
+
+
+    public function listpayments(Request $request) {
+        $request->validate([
+            "page_number" => "required|integer",
+            "status" => "required|string",
+            "search_text" => "nullable|string"
+        ]);
+        $id = Auth::id();
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($request->search_text != null) {
+            $payments = Payments::where("customer_id", $customer->authId)->where("insurance_id", $request->search_text)->where("status", $request->status)->paginate($request->page_number);
+            foreach($payments as $payment){
+                $payment->insurance->policy->attachpolicy;
+            }
+            return response([
+                "status" => "success",
+                "message" => "Insurance Fetched Successfully.",
+                "insurance" => $payments
+            ], 200);
+        }
+        $payments = Payments::where("customer_id", $customer->authId)->where("status", $request->status)->paginate($request->page_number);
+        foreach($payments as $payment){
+            $payment->insurance->policy->attachpolicy;
+        }
+        return response([
+            "status" => "success",
+            "message" => "Insurance Fetched Successfully.",
+            "insurance" => $payments
         ], 200);
     }
 

@@ -46,12 +46,18 @@ Route::group(['prefix' => 'customers'], function () {
         Route::post('/list', [InsuranceController::class, 'listInsurance'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/listforcustomer', [InsuranceController::class, 'listCustomer'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/list/{insurance_id}', [InsuranceController::class, 'oneInsurance'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::group(['prefix' => 'payment'], function () {
+            Route::post('/list', [InsuranceController::class, 'listPayments'])->middleware(['auth:sanctum', 'type.customer']);
+        });
     });
+
+    
 
 
     Route::group(['prefix' => 'claim'], function () {
         Route::post('/create', [ClaimController::class, 'createclaim'])->middleware(['auth:sanctum', 'type.customer']);
-        // Route::get('/list/{insurance_id}', [InsuranceController::class, 'oneInsurance'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::post('/list', [ClaimController::class, 'list_claim'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::get('/single/{claimid}', [ClaimController::class, 'getclaim'])->middleware(['auth:sanctum', 'type.customer']);
     });
 
 

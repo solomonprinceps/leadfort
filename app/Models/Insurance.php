@@ -34,5 +34,10 @@ class Insurance extends Model
         return $this->hasMany(Claim::class, "insurance_id", "insurance_id");
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payments::class);
+    }
+
 
 }
