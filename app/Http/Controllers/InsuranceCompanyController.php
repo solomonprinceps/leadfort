@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\InsuranceCompany;
 use Illuminate\Http\Request;
 use App\Models\Admin;
+use App\Models\AttachPolicy;
 use Illuminate\Support\Facades\Auth;
 
 class InsuranceCompanyController extends Controller
 {
-   public function createInsurance(Request $request) {
+    public function createInsurance(Request $request) {
         $request->validate([
             "company_name" => "required|string",
-            'image' => 'required|mimes:png,jpg,jpeg,pdf|max:2048',
+            'image' => 'required|string',
             "transaction_pin" => "required|string",
         ]);
         $id = Auth::id();
@@ -37,18 +38,12 @@ class InsuranceCompanyController extends Controller
             ], 400);
         }
 
-        if($file = $request->file('image')) {
-            $filename = 'companyimge-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->move(public_path('companyimge'), $filename);
-            $documentlink = asset('companyimge/'.$filename);
-            
-            $insurance = InsuranceCompany::create([
-                "company_name" => $request->company_name,
-                "image" => $documentlink,
-                "company_id" => 'IC'.date('YmdHis').rand(10000, 99999),
-                "adminId" => $admin->adminId
-            ]);
-        }
+        $insurance = InsuranceCompany::create([
+            "company_name" => $request->company_name,
+            "image" => $request->image,
+            "company_id" => 'IC'.date('YmdHis').rand(10000, 99999),
+            "adminId" => $admin->adminId
+        ]);
         return response([
             "message" => "Insurance Company Created Successfully.",
             "status" => "success",
@@ -56,7 +51,7 @@ class InsuranceCompanyController extends Controller
         ], 200);
     }
 
-   public function editcompany(Request $request) {
+    public function editcompany(Request $request) {
         $request->validate([
             "company_name" => "required|string",
             "company_id" => "required|string",
@@ -97,10 +92,9 @@ class InsuranceCompanyController extends Controller
             "status" => "success",
             "insurance" => $insurance
         ], 200);
+    }
 
-   }
-
-   public function deletecompany(Request $request) {
+     function deletecompany(Request $request) {
         $request->validate([
             "company_id" => "required|string",
             "transaction_pin" => "required|string",
@@ -162,9 +156,12 @@ class InsuranceCompanyController extends Controller
            "status" => "success",
            "insurance" => $singleinsurance
        ], 200);
-   }
-
-   public function listcompany(Request $request) {
+    }
+    protected function attachpolicount(InsuranceCompany $company) {
+       $count = AttachPolicy::where("company_id", $company->company_id)->count();
+       return $count;
+    }
+    public function listcompany(Request $request) {
         $request->validate([
             "page_number" => "required|integer"
         ]);
@@ -177,11 +174,14 @@ class InsuranceCompanyController extends Controller
                 "insurances" => null
             ], 200);
         }
+        foreach ($insurances as $value) {
+            $value->attachment_count = $this->attachpolicount($value);
+        }
         return response([
             "message" => "Insurance company available",
             "status" => "success",
             "insurances" => $insurances
         ], 200);
-   }
+    }
 
 }

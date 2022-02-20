@@ -13,7 +13,7 @@ class AttachPolicyController extends Controller
 {
     public function create_attachemnt(Request $request) {
         $request->validate([
-            'image' => 'required|mimes:png,jpg,jpeg,pdf|max:2048',
+            'image' => 'required|string',
             "policy_id" => "required|string",
             "company_id" => "required|string",
             "rate" => "required|string",
@@ -61,27 +61,21 @@ class AttachPolicyController extends Controller
                 "status" => "error"
             ], 400);
         }
-        if($file = $request->file('image')) {
-            $filename = 'policydocument-'. rand(10000,99999) . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->move(public_path('policydocument'), $filename);
-            $documentlink = asset('policydocument/'.$filename);
-            
-            $newattachment = AttachPolicy::create([
-                "policy_id" => $request->policy_id,
-                "company_id" => $request->company_id,
-                "rate" => $request->rate,
-                "amount" => $request->amount,
-                "policy_document" => $documentlink,
-                "description" => $request->description,
-            ]);
-            $newattachment->company;
-            $newattachment->policy;  
-            return response()->json([
-                "status" => 'success',
-                "customer" => $newattachment,
-                "message" => "Policy Attached Successfully.",
-            ], 200);
-        }
+        $newattachment = AttachPolicy::create([
+            "policy_id" => $request->policy_id,
+            "company_id" => $request->company_id,
+            "rate" => $request->rate,
+            "amount" => $request->amount,
+            "policy_document" => $request->image,
+            "description" => $request->description,
+        ]);
+        $newattachment->company;
+        $newattachment->policy;  
+        return response()->json([
+            "status" => 'success',
+            "customer" => $newattachment,
+            "message" => "Policy Attached Successfully.",
+        ], 200);
     }
 
 

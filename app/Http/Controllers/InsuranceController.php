@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AttachPolicy;
 use App\Models\Customer;
 use App\Models\Insurance;
+use App\Models\InsuranceCompany;
 use App\Models\Policy;
 use Illuminate\Http\Request;
 use App\Models\Payments;
@@ -46,6 +47,18 @@ class InsuranceController extends Controller
         ], 200);
     }
 
+    protected function updatecustomercount(Insurance $insurance) {
+        if ($insurance->attach_policies_id == null) {
+            return;
+        }
+        $attachpolicy = AttachPolicy::where("id", $insurance->attach_policies_id)->first();
+        $insurance_company = InsuranceCompany::where("company_id", $attachpolicy->company_id)->first();
+        $insurance_company->update([
+            "customer_number" => $insurance_company->customer_number +1
+        ]);
+        $insurance_company->save();
+    }
+
     public function verifypayment($refrence) {
         // return $refrence;
         $response = Http::withHeaders([
@@ -71,6 +84,7 @@ class InsuranceController extends Controller
                     "status" => 'completed'
                 ]);
                 $payments->save();
+                $this->updatecustomercount($insurance);
                 return response([
                     "status" => "success",
                     "message" => "Successfully verified."
