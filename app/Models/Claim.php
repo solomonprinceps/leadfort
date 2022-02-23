@@ -23,4 +23,8 @@ class Claim extends Model
     public function insurance() {
         return $this->hasOne(Insurance::class, "insurance_id", "insurance_id");
     }
+
+    public function customer() {
+        return $this->belongsTo(Customer::class, "customer_id", "authId");
+    }
 }

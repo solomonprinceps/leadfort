@@ -86,6 +86,10 @@ Route::group(['prefix' => 'admins'], function () {
         Route::post('/delete', [InsuranceCompanyController::class, 'deletecompany'])->middleware(['auth:sanctum', 'type.admin']);
     });
 
+    Route::group(['prefix' => 'claims'], function () {
+        Route::post('/list', [ClaimController::class, 'adminlist_claim'])->middleware(['auth:sanctum', 'type.admin']);
+        Route::get('/single/{claim_id}', [ClaimController::class, 'adminsingle_claim'])->middleware(['auth:sanctum', 'type.admin']);
+    });
 
     Route::group(['prefix' => 'policy'], function () {
         Route::post('/create', [PolicyController::class, 'createpolicy'])->middleware(['auth:sanctum', 'type.admin']);

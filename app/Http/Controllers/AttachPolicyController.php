@@ -6,6 +6,7 @@ use App\Models\AttachPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
+use App\Models\Insurance;
 use App\Models\InsuranceCompany;
 use App\Models\Policy;
 
@@ -171,6 +172,11 @@ class AttachPolicyController extends Controller
         }
     }
 
+    protected function countcustommer($policy_id) {
+        $insurance = Insurance::where("policy_id", $policy_id)->where("status", '2')->count();
+        return $insurance;
+    }
+
     public function list_attachemnt(Request $request) {
         $request->validate([
             "page_number" => "required|string"
@@ -185,11 +191,12 @@ class AttachPolicyController extends Controller
         }
         foreach ($listattch as $value) {
             $value->company;
+            $value->customer_count = $this->countcustommer($value->policy_id);
             $value->policy;
         }
         return response()->json([
             "message" => "Data fetched",
-            "error" => "error",
+            "error" => "success",
             "data" => $listattch
         ], 200);
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Claim;
 use App\Models\Insurance;
 use App\Models\Customer;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -136,6 +137,136 @@ class ClaimController extends Controller
                 "insurance" => $payments
             ], 200);
             
+        }
+    }
+
+    public function adminsingle_claim($claimid) {
+        $id = Auth::id();
+        $admin = Admin::where("id", $id)->first();
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $claims = Claim::where("claim_id", $claimid)->first();
+        if ($claims == null) {
+            return response([
+                "message" => "Claim does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $claims->insurance->policy->attachpolicy;
+        $claims->images = json_decode($claims->images);
+        $claims->documents = json_decode($claims->documents);
+        $claims->customer;
+        
+        return response([
+            "message" => "Claim fetched successfully.",
+            "claims" => $claims,
+            "status" => "success"
+        ], 200);
+    }
+
+    public function adminlist_claim(Request $request) {
+        $request->validate([
+            "page_number" => "required|integer",
+            "id" => "nullable|string",
+            "searchText" => "nullable|string"
+        ]);
+        $id = Auth::id();
+        $admin = Admin::where("id", $id)->first();
+        if ($admin == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($request->id == null) {
+            if ($request->searchText != null) {
+                $claims = Claim::where("claim_id", $request->searchText)->paginate($request->page_number);
+                foreach($claims as $claim){
+                    $claim->insurance->policy->attachpolicy;
+                    $claim->images = json_decode($claim->images);
+                    $claim->documents = json_decode($claim->documents);
+                    $claim->customer;
+                }
+                return response([
+                    "message" => "Claims fetched successfully.",
+                    "claims" => $claims,
+                    "status" => "success"
+                ], 400);
+            }
+            $claims = Claim::paginate($request->page_number);
+            foreach($claims as $claim){
+                $claim->insurance->policy->attachpolicy;
+                $claim->images = json_decode($claim->images);
+                $claim->documents = json_decode($claim->documents);
+                $claim->customer;
+            }
+            return response([
+                "message" => "Claims fetched successfully.",
+                "claims" => $claims,
+                "status" => "success"
+            ], 400);
+        }
+
+        if ($request->id == 0) {
+            if ($request->searchText != null) {
+                $claims = Claim::where("status", $request->id)->where("claim_id", $request->searchText)->paginate($request->page_number);
+                foreach($claims as $claim){
+                    $claim->insurance->policy->attachpolicy;
+                    $claim->images = json_decode($claim->images);
+                    $claim->documents = json_decode($claim->documents);
+                    $claim->customer;
+                }
+                return response([
+                    "message" => "Claims fetched successfully.",
+                    "claims" => $claims,
+                    "status" => "success"
+                ], 400);
+            }
+            $claims = Claim::where("status", $request->id)->paginate($request->page_number);
+            foreach($claims as $claim){
+                $claim->insurance->policy->attachpolicy;
+                $claim->images = json_decode($claim->images);
+                $claim->documents = json_decode($claim->documents);
+                $claim->customer;
+            }
+            return response([
+                "message" => "Claims fetched successfully.",
+                "claims" => $claims,
+                "status" => "success"
+            ], 400);
+        }
+
+        if ($request->id == 1) { // claimed
+            if ($request->searchText != null) {
+                $claims = Claim::where("status", $request->id)->where("claim_id", $request->searchText)->paginate($request->page_number);
+                foreach($claims as $claim){
+                    $claim->insurance->policy->attachpolicy;
+                    $claim->images = json_decode($claim->images);
+                    $claim->documents = json_decode($claim->documents);
+                    $claim->customer;
+                }
+                return response([
+                    "message" => "Claims fetched successfully.",
+                    "claims" => $claims,
+                    "status" => "success"
+                ], 400);
+            }
+            $claims = Claim::where("status", $request->id)->paginate($request->page_number);
+            foreach($claims as $claim){
+                $claim->insurance->policy->attachpolicy;
+                $claim->images = json_decode($claim->images);
+                $claim->documents = json_decode($claim->documents);
+                $claim->customer;
+            }
+            return response([
+                "message" => "Claims fetched successfully.",
+                "claims" => $claims,
+                "status" => "success"
+            ], 400);
         }
     }
 }

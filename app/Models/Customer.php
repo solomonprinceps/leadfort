@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Claim;
 
 class Customer extends Authenticatable
 {
@@ -41,5 +42,9 @@ class Customer extends Authenticatable
 
     public function providers() {
         return $this->hasMany(Provider::class,'user_id','id');
+    }
+
+    public function claim() {
+        return $this->hasMany(Claim::class, "customer_id", "authId");
     }
 }
