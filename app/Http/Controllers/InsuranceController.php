@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttachPolicy;
+use App\Models\Claim;
 use App\Models\Customer;
 use App\Models\Insurance;
 use App\Models\InsuranceCompany;
@@ -64,8 +65,10 @@ class InsuranceController extends Controller
         $response = Http::withHeaders([
             'Authorization' => 'Bearer '.env("Paystack_Secret"),
         ])->get('https://api.paystack.co/transaction/verify/'.$refrence);
-        Log::info($response);
+        // Log::info($response);
+        
         if (isset($response["data"])) {
+            // return $response;
             $payments = Payments::where("reference", $refrence)->first();
             if ($payments == null) {
                 return response([
@@ -230,8 +233,34 @@ class InsuranceController extends Controller
             "message" => "Insurance Fetched Successfully.",
             "insurance" => $insurances
         ], 200);
-        
+    }
 
+    public function oneInsurancewithclaims($insurance) {
+        $id = Auth::id();
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $insurances = Insurance::where("customer_id", $customer->authId)->where("insurance_id", $insurance)->first();
+        if ($insurances == null) {
+            return response([
+                "message" => "Insurances does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        $claims = Claim::where("insurance_id", $insurance)->get();
+        $atid = (int) $insurances->attach_policies_id;
+        $insurances->attached_policy = $this->getcompanyandattcehent($atid);
+        $insurances->policy;
+        $insurances->claims = $claims;
+        return response([
+            "status" => "success",
+            "message" => "Insurance Fetched Successfully.",
+            "insurance" => $insurances
+        ], 200);
     }
 
     public function listCustomer() {

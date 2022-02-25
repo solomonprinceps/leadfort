@@ -9,6 +9,8 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\AttachPolicyController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\ClaimController;
+use App\Http\Controllers\PaymentsController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,6 +48,7 @@ Route::group(['prefix' => 'customers'], function () {
         Route::post('/list', [InsuranceController::class, 'listInsurance'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/listforcustomer', [InsuranceController::class, 'listCustomer'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/list/{insurance_id}', [InsuranceController::class, 'oneInsurance'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::get('/list/claims/{insurance_id}', [InsuranceController::class, 'oneInsurancewithclaims'])->middleware(['auth:sanctum', 'type.customer']);
         Route::group(['prefix' => 'payment'], function () {
             Route::post('/list', [InsuranceController::class, 'listPayments'])->middleware(['auth:sanctum', 'type.customer']);
         });
@@ -89,14 +92,16 @@ Route::group(['prefix' => 'admins'], function () {
     Route::group(['prefix' => 'claims'], function () {
         Route::post('/list', [ClaimController::class, 'adminlist_claim'])->middleware(['auth:sanctum', 'type.admin']);
         Route::get('/single/{claim_id}', [ClaimController::class, 'adminsingle_claim'])->middleware(['auth:sanctum', 'type.admin']);
+        Route::post('/change/status', [ClaimController::class, 'claim_changestatus'])->middleware(['auth:sanctum', 'type.admin']);
     });
-
+        // paymentlist
+    Route::group(['prefix' => 'payments'], function () {
+        Route::post('/list', [PaymentsController::class, 'paymentlist']);
+    });    
     Route::group(['prefix' => 'policy'], function () {
         Route::post('/create', [PolicyController::class, 'createpolicy'])->middleware(['auth:sanctum', 'type.admin']);
         Route::post('/edit', [PolicyController::class, 'editpolicy'])->middleware(['auth:sanctum', 'type.admin']);
         Route::post('/list', [PolicyController::class, 'listPolicies'])->middleware(['auth:sanctum', 'type.admin']);
-
-
         Route::group(['prefix' => 'attachment'], function () {
             Route::post('/create', [AttachPolicyController::class, 'create_attachemnt'])->middleware(['auth:sanctum', 'type.admin']);
             Route::post('/edit', [AttachPolicyController::class, 'edit_attachemnt'])->middleware(['auth:sanctum', 'type.admin']);

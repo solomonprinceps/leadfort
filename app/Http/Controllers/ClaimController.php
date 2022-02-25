@@ -99,6 +99,49 @@ class ClaimController extends Controller
         ], 200);
     }
 
+    public function claim_changestatus(Request $request) {
+        $request->validate([
+            "claim_id" => "required|string",
+            "status" => "required|integer"
+        ]);
+        $id = Auth::id();
+        $customer = Admin::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Admin does'nt exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($request->status == '1' && $request->status == '-1') {
+            return response([
+                "message" => "wrong status.",
+                "status" => "error"
+            ], 400);
+        }
+        $claim = Claim::where("claim_id", $request->claim_id)->first();
+        if ($claim == null) {
+            return response([
+                "message" => "Claim already exist.",
+                "status" => "error"
+            ], 400);
+        }
+        if ($claim->status == $request->status) {
+            return response([
+                "message" => "Claim status already changed.",
+                "status" => "error"
+            ], 400);
+        }
+        $claim->update([
+            "status" => $request->status
+        ]);
+        $claim->save();
+        return response([
+            "message" => "Claim status change successfully.",
+            "status" => "success"
+        ], 200);
+
+    }
+
     public function list_claim(Request $request) {
         $request->validate([
             "page_number" => "required|integer",
@@ -113,7 +156,7 @@ class ClaimController extends Controller
                 "status" => "error"
             ], 400);
         }
-        $payments = Claim::where("customer_id", $customer->authId)->where("status", $request->status)->paginate($request->page_number);
+        $payments = Claim::where("customer_id", $customer->authId)->where("status", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
         foreach($payments as $payment){
             $payment->insurance->policy->attachpolicy;
             $payment->images = json_decode($payment->images);
@@ -125,7 +168,7 @@ class ClaimController extends Controller
             "insurance" => $payments
         ], 200);
         if ($request->search_text != null) {
-            $payments = Claim::where("customer_id", $customer->authId)->where("claim_id", $request->search_text)->where("status", $request->status)->paginate($request->page_number);
+            $payments = Claim::where("customer_id", $customer->authId)->where("claim_id", $request->search_text)->where("status", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
             foreach($payments as $payment){
                 $payment->insurance->policy->attachpolicy;
                 $payment->images = json_decode($payment->images);
