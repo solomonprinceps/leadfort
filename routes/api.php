@@ -39,10 +39,10 @@ Route::group(['prefix' => 'customers'], function () {
     Route::post('/password/reset', [CustomersController::class, 'reset']);
     Route::post('/editprofile', [CustomersController::class, 'editprofile'])->middleware(['auth:sanctum', 'type.customer']);
     Route::post('/editpassword', [CustomersController::class, 'editpassword'])->middleware(['auth:sanctum', 'type.customer']);
+    
     Route::group(['prefix' => 'policy'], function () {
         Route::get('/list', [PolicyController::class, 'customerPolicylist'])->middleware(['auth:sanctum', 'type.customer']);
     });
-
 
     Route::group(['prefix' => 'insurance'], function () {
         Route::post('/list', [InsuranceController::class, 'listInsurance'])->middleware(['auth:sanctum', 'type.customer']);
@@ -54,21 +54,21 @@ Route::group(['prefix' => 'customers'], function () {
         });
     });
 
-    
-
-
     Route::group(['prefix' => 'claim'], function () {
         Route::post('/create', [ClaimController::class, 'createclaim'])->middleware(['auth:sanctum', 'type.customer']);
         Route::post('/list', [ClaimController::class, 'list_claim'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/single/{claimid}', [ClaimController::class, 'getclaim'])->middleware(['auth:sanctum', 'type.customer']);
     });
 
-
     Route::group(['prefix' => 'insurance/buy'], function () {
         Route::post('/one', [InsuranceController::class, 'createStepone'])->middleware(['auth:sanctum', 'type.customer']);
         Route::post('/two', [InsuranceController::class, 'createSteptwo'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/verify/{reference}', [InsuranceController::class, 'verifypayment'])->middleware(['auth:sanctum', 'type.customer']);
         Route::get('/two/{id}', [InsuranceController::class, 'getAttachment'])->middleware(['auth:sanctum', 'type.customer']);
+    });
+    Route::group(['prefix' => 'payments'], function () {
+        Route::post('/list', [PaymentsController::class, 'paymentlistuser'])->middleware(['auth:sanctum', 'type.customer']);
+        Route::get('/single/{payment_id}', [PaymentsController::class, 'singlepayment'])->middleware(['auth:sanctum', 'type.customer']);
     });
 });
 
