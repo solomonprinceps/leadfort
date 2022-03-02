@@ -28,7 +28,7 @@ class ClaimController extends Controller
                 "status" => "error"
             ], 200);
         }
-        if ($insurance != 2) {
+        if ($insurance->status != 2) {
             return response([
                 "message" => "You can't make claim for unpaid policy",
                 "status" => "error"
