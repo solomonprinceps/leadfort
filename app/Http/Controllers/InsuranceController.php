@@ -61,12 +61,10 @@ class InsuranceController extends Controller
     }
 
     public function verifypayment($refrence) {
-        // return $refrence;
         $response = Http::withHeaders([
             'Authorization' => 'Bearer '.env("Paystack_Secret"),
         ])->get('https://api.paystack.co/transaction/verify/'.$refrence);
         // Log::info($response);
-        return $response;
         if (isset($response["data"])) {
             // return $response;
             $payments = Payments::where("reference", $refrence)->first();
