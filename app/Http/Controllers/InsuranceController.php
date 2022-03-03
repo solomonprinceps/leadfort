@@ -89,7 +89,7 @@ class InsuranceController extends Controller
                 return response([
                     "status" => "success",
                     "message" => "Successfully verified."
-                ], 400);
+                ], 200);
             }
         }
         return response([
