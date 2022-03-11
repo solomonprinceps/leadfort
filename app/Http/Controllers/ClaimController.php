@@ -51,7 +51,7 @@ class ClaimController extends Controller
             }
         }
         
-        if ($documents) {
+        if ($documents != null) {
             foreach ($documents as $value) {
                 $uploadDocuments = $value;
             }

@@ -82,6 +82,9 @@ class PaymentsController extends Controller
         }
         if($request->status == null) {
             $payments = Payments::where("customer_id", $customer->authId)->orderBy('id', 'DESC')->paginate($request->page_number);
+            foreach ($payments as $value) {
+                $value->insurance->policy->attachpolicy;
+            }
             return response([
                 "message" => "Payments fetched successfully.",
                 "status" => "success",
@@ -89,6 +92,9 @@ class PaymentsController extends Controller
             ], 200);
         }
         $payments = Payments::where("customer_id", $customer->authId)->where("status",$request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
+        foreach ($payments as $value) {
+            $value->insurance->policy->attachpolicy;
+        }
         return response([
             "message" => "Payments fetched successfully.",
             "status" => "success",
