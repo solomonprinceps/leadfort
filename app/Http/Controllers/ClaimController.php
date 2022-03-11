@@ -45,12 +45,18 @@ class ClaimController extends Controller
         $uploadDocuments = [];
         $images = json_decode($request->images);
         $documents = json_decode($request->documents);
-        foreach ($images as $value) {
-            $uploadImages = $value;
+        if ($images != null) {
+            foreach ($images as $value) {
+                $uploadImages = $value;
+            }
         }
-        foreach ($documents as $value) {
-            $uploadDocuments = $value;
+        
+        if ($documents) {
+            foreach ($documents as $value) {
+                $uploadDocuments = $value;
+            }
         }
+        
         
         $claim = "CLM".date('YmdHis').rand(10000, 99999).rand(10000, 99999).rand(10000, 99999);
         Claim::create([
