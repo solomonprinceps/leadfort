@@ -270,7 +270,7 @@ class InsuranceController extends Controller
                 "status" => "error"
             ], 400);
         }
-        $insurances = Insurance::where("customer_id", $customer->authId)->where("status", '1')->get();
+        $insurances = Insurance::where("customer_id", $customer->authId)->where("status", '2')->get();
         foreach ($insurances as $value) {
             $atid = (int) $value->attach_policies_id;
             $value->attached_policy = $this->getcompanyandattcehent($atid);
