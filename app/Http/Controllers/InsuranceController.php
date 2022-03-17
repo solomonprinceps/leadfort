@@ -171,13 +171,13 @@ class InsuranceController extends Controller
                 "insurance" =>  null
             ], 400);
         }
-        if ($insurance->status != 0) {
-            return response([
-                "message" => "Insurance is already awaiting payments.",
-                "status" => "error",
-                "insurance" =>  $insurance
-            ], 400);
-        }
+        // if ($insurance->status != 0) {
+        //     return response([
+        //         "message" => "Insurance is already awaiting payments.",
+        //         "status" => "error",
+        //         "insurance" =>  $insurance
+        //     ], 400);
+        // }
         $attachments = AttachPolicy::where("id", $request->attach_policies_id)->where("policy_id", $insurance->policy_id)->first();
         if ($insurance == null) {
             return response([

@@ -185,7 +185,6 @@ class ClaimController extends Controller
                 "message" => "Claims Fetched Successfully.",
                 "insurance" => $payments
             ], 200);
-            
         }
     }
 
