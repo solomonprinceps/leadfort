@@ -28,12 +28,12 @@ class ClaimController extends Controller
                 "status" => "error"
             ], 200);
         }
-        if ($insurance->status != 2) {
-            return response([
-                "message" => "You can't make claim for unpaid policy",
-                "status" => "error"
-            ], 200);
-        }
+        // if ($insurance->status != 2) {
+        //     return response([
+        //         "message" => "You can't make claim for unpaid policy",
+        //         "status" => "error"
+        //     ], 200);
+        // }
         $customer = Customer::where("id", $id)->first();
         if ($customer == null) {
             return response([
@@ -47,13 +47,13 @@ class ClaimController extends Controller
         $documents = json_decode($request->documents);
         if ($images != null) {
             foreach ($images as $value) {
-                $uploadImages = $value;
+                array_push($uploadImages, $value);
             }
         }
         
         if ($documents != null) {
             foreach ($documents as $value) {
-                $uploadDocuments = $value;
+                array_push($uploadDocuments, $value);
             }
         }
         
