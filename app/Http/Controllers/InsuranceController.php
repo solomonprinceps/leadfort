@@ -326,7 +326,7 @@ class InsuranceController extends Controller
         $request->validate([
             "page_number" => "required|integer",
             "search_text" => "string|nullable",
-            "status" => "required|integer"
+            "status" => "nullable|integer"
         ]);
         $customer = Customer::where("id", $id)->first();
         if ($customer == null) {
