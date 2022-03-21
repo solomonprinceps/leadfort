@@ -339,8 +339,7 @@ class InsuranceController extends Controller
             $insurances = Insurance::where("customer_id", $customer->authId)->where("insurance_id", $request->search_text)->orderBy('id', 'DESC')->paginate($request->page_number);
             foreach ($insurances as $value) {
                 $atid = (int) $value->attach_policies_id;
-                
-                $value->attached_policy = $this->getcompanyandattcehent($atid);
+                $value->attached_policy = $value->attach_policies_id  == null ? null : $this->getcompanyandattcehent($atid);
                 $value->policy;
             }
             return response([
@@ -353,8 +352,7 @@ class InsuranceController extends Controller
             $insurances = Insurance::where("customer_id", $customer->authId)->where("insurance_id", $request->search_text)->where("status", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
             foreach ($insurances as $value) {
                 $atid = (int) $value->attach_policies_id;
-                
-                $value->attached_policy = $this->getcompanyandattcehent($atid);
+                $value->attached_policy = $value->attach_policies_id  == null ? null : $this->getcompanyandattcehent($atid);
                 $value->policy;
             }
             return response([
@@ -366,8 +364,7 @@ class InsuranceController extends Controller
         $insurances = Insurance::where("customer_id", $customer->authId)->orderBy('id', 'DESC')->paginate($request->page_number);
         foreach ($insurances as $value) {
             $atid = (int) $value->attach_policies_id;
-            
-            $value->attached_policy = $this->getcompanyandattcehent($atid);
+            $value->attached_policy = $value->attach_policies_id  == null ? null : $this->getcompanyandattcehent($atid);
             $value->policy;
         }
         return response([
