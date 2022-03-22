@@ -371,6 +371,20 @@ class InsuranceController extends Controller
                 "insurance" => $insurances
             ], 200);
         }
+
+        if ($request->search_text == null && $request->status != null) {
+            $insurances = Insurance::where("customer_id", $customer->authId)->where("status", $request->status)->orderBy('id', 'DESC')->paginate($request->page_number);
+            foreach ($insurances as $value) {
+                $atid = (int) $value->attach_policies_id;
+                $value->attached_policy = $value->attach_policies_id  == null ? null : $this->getcompanyandattcehent($atid);
+                $value->policy;
+            }
+            return response([
+                "status" => "success",
+                "message" => "Insurance Fetched Successfully.",
+                "insurance" => $insurances
+            ], 200);
+        }
         $insurances = Insurance::where("customer_id", $customer->authId)->orderBy('id', 'DESC')->paginate($request->page_number);
         foreach ($insurances as $value) {
             $atid = (int) $value->attach_policies_id;
