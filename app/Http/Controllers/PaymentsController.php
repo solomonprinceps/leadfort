@@ -83,7 +83,10 @@ class PaymentsController extends Controller
         if($request->status == null) {
             $payments = Payments::where("customer_id", $customer->authId)->orderBy('id', 'DESC')->paginate($request->page_number);
             foreach ($payments as $value) {
-                $value->insurance->policy->attachpolicy;
+                $pol = $value->insurance->policy->policy_name;
+                $attach = $value->insurance->policy->attachpolicy[0]->company;
+                $value->policyname = $pol;
+                $value->company = $attach->company_name;
             }
             return response([
                 "message" => "Payments fetched successfully.",

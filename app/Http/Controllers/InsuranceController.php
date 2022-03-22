@@ -224,8 +224,18 @@ class InsuranceController extends Controller
             ], 400);
         }
         $atid = (int) $insurances->attach_policies_id;
-        $insurances->attached_policy = $this->getcompanyandattcehent($atid);
+        $insurances->attached_policy = $atid == null ? null : $this->getcompanyandattcehent($atid);
         $insurances->policy;
+        $claims = $insurances->claim;
+        if ($claims->isNotEmpty()) {
+            foreach ($claims as $claim) {
+                $claim->images = json_decode($claim->images);
+                $claim->documents = json_decode($claim->documents);
+            }
+        }
+        
+        // $claims->images = json_decode($claims->images);
+        // $claims->documents = json_decode($claims->documents);
         return response([
             "status" => "success",
             "message" => "Insurance Fetched Successfully.",
