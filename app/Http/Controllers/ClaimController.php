@@ -167,6 +167,10 @@ class ClaimController extends Controller
             $payment->insurance->policy->attachpolicy;
             $payment->images = json_decode($payment->images);
             $payment->documents = json_decode($payment->documents);
+            $pol = $payment->insurance->policy->policy_name;
+            $attach = $payment->insurance->policy->attachpolicy[0]->company;
+            $payment->policyname = $pol;
+            $payment->insurer = $attach->company_name;
         }
         return response([
             "status" => "success",

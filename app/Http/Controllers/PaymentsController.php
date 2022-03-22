@@ -86,7 +86,7 @@ class PaymentsController extends Controller
                 $pol = $value->insurance->policy->policy_name;
                 $attach = $value->insurance->policy->attachpolicy[0]->company;
                 $value->policyname = $pol;
-                $value->company = $attach->company_name;
+                $value->insurer = $attach->company_name;
             }
             return response([
                 "message" => "Payments fetched successfully.",
