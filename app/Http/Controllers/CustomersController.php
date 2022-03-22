@@ -13,6 +13,35 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ForgotPassword;
 class CustomersController extends Controller
 {
+    public function changepasslink(Request $request) {
+        $id = Auth::id();
+        $request->validate([
+            "oldpassword" => "required|string",
+            "newpassword" => "required|string|confirmed",
+        ]);
+        $customer = Customer::where("id", $id)->first();
+        if ($customer == null) {
+            return response([
+                "message" => "Customer doesn't exist.",
+                "status" => "error"
+            ],400);
+        }
+
+        if (!Hash::check($request->password, $customer->password)) {
+            return response([
+                "message" => "The provided password is incorrect.",
+                "status" => "error"
+            ], 400);
+        }
+        $customer->update([
+            "password" => bcrypt($request->password)
+        ], 200);
+        return response([
+            "message" => "password Updated Successfully.",
+            "status" => "success"
+        ], 400);
+
+    }
     public function reset(Request $request) {
         $request->validate([
             "token" => "required|string",
