@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EmailCreateclaim;
 use App\Models\Payments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
 use App\Models\Customer;
-use Faker\Provider\ar_EG\Payment;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailPurchase;
+use App\Mail\EmailWelcome;
 
 class PaymentsController extends Controller
 {

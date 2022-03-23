@@ -14,6 +14,8 @@ use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Mail\EmailPurchase;
+use Illuminate\Support\Facades\Mail;
 
 class InsuranceController extends Controller
 {
@@ -86,6 +88,8 @@ class InsuranceController extends Controller
                 ]);
                 $payments->save();
                 $this->updatecustomercount($insurance);
+                $user = Auth::user();
+                Mail::to($user->email)->send(new EmailPurchase($user));
                 return response([
                     "status" => "success",
                     "message" => "Successfully verified."
@@ -332,6 +336,7 @@ class InsuranceController extends Controller
     }
 
     public function listInsurance(Request $request) {
+
         $id = Auth::id();
         $request->validate([
             "page_number" => "required|integer",

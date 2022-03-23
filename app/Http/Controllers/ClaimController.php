@@ -9,6 +9,9 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\Mime\Email;
+use App\Mail\EmailCreateclaim;
+use Illuminate\Support\Facades\Mail;
 
 class ClaimController extends Controller
 {
@@ -72,6 +75,8 @@ class ClaimController extends Controller
         $clm->insurance;
         $clm->images = json_decode($clm->images);
         $clm->documents = json_decode($clm->documents);
+        $user = Auth::user();
+        Mail::to($user->email)->send(new EmailCreateclaim($user));
         return response([
             "message" => "Claim Created",
             "status" => "success",

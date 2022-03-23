@@ -6,20 +6,20 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-
-class ForgotPassword extends Mailable
+use App\Models\Customer;
+class EmailCreateclaim extends Mailable
 {
     use Queueable, SerializesModels;
+    public $customer;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public $token;
-    public function __construct($token)
+    public function __construct(Customer $customer)
     {
-        $this->token = $token;
+        $this->customer = $customer;
     }
 
     /**
@@ -29,6 +29,6 @@ class ForgotPassword extends Mailable
      */
     public function build()
     {
-        return $this->from(env("MAIL_SENDER_EMAIL"))->view('mails.forgotmail');
+        return $this->from(env("MAIL_SENDER_EMAIL"))->subject("Claim Created")->view('mails.createclaim');
     }
 }

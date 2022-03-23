@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ForgotPassword;
+use App\Mail\EmailWelcome;
+
 class CustomersController extends Controller
 {
     public function changepasslink(Request $request) {
@@ -385,6 +387,7 @@ class CustomersController extends Controller
             "phone_number" => $request->phone_number,
             "password" => bcrypt($request->password)
         ]);
+        Mail::to($customer->email)->send(new EmailWelcome($customer));
         return response([
             "message" => "Customer Created Successfully.",
             "status" => "success",
